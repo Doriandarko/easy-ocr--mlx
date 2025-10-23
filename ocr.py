@@ -33,6 +33,7 @@ def main():
 Available Models:
   granite    - IBM Granite Docling (258M) - Fast, outputs DocTags
   nanonets   - Nanonets OCR2 (3B-4bit) - High quality, semantic tagging
+  paddleocr  - PaddleOCR (0.9B) - 109 languages, handwriting support
   olmocr     - OlmOCR (7B) - Highest accuracy, English-only, batch optimized
   
 Examples:
@@ -57,7 +58,7 @@ Note: PDFs not supported. Convert PDFs to images first:
         "--model",
         type=str,
         default="granite",
-        choices=["granite", "nanonets", "olmocr"],
+        choices=["granite", "nanonets", "paddleocr", "olmocr"],
         help="Model to use (default: granite)"
     )
     
@@ -113,6 +114,7 @@ Note: PDFs not supported. Convert PDFs to images first:
     MODEL_MAP = {
         "granite": "ibm-granite/granite-docling-258M-mlx",  # ✅ Verified working
         "nanonets": "mlx-community/Nanonets-OCR2-3B-4bit",  # ✅ 4-bit quantized
+        "paddleocr": "NexaAI/paddle-ocr-mlx",  # ✅ 109 languages
         "olmocr": "mlx-community/olmOCR-2-7B-1025-bf16",  # ✅ Large, high accuracy
     }
     
@@ -125,6 +127,7 @@ Extract the text from the above document as if you were reading it naturally.
 Return tables in HTML format. Return equations in LaTeX. 
 If there's an image without a caption, add a description inside <img></img> tags.
 Use ☐ and ☑ for checkboxes.""",
+        "paddleocr": "<image>\nExtract all text from this document preserving the layout and structure.",
         "olmocr": "<image>\nExtract all text from this document in markdown format with proper structure.",
     }
     
