@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# MLX model cache
+.cache/
+models/
+*.mlx/
+
+# Test files
+sample_document.png
+test_output/
+output/
+
+# Output files
+*.md.bak
+results/
+
+# macOS
+.DS_Store
+._*
+
+# uv
+.uv/
+
