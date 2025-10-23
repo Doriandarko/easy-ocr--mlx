@@ -72,6 +72,10 @@ uv run ocr.py long-scan.png --max-tokens 8000 --temperature 0.0
 | **nanonets** | 3B | Highest quality, captions, signatures | English, Chinese, French, Arabic, more |
 | **paddleocr** | 0.9B | Multilingual documents | 109 languages |
 
+📚 **See [MODELS.md](MODELS.md)** for detailed comparison, best practices from Hugging Face, and how to choose the right model.
+
+**Note**: DeepSeek-OCR, OlmOCR, and dots.ocr are mentioned in the guide but not yet available in MLX format.
+
 ## Model Features
 
 ### Granite (Default)
