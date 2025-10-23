@@ -32,8 +32,8 @@ def main():
         epilog="""
 Available Models:
   granite    - IBM Granite Docling (258M) - Fast, outputs DocTags
-  nanonets   - Nanonets OCR2 (3B) - Semantic tagging, captions
-  paddleocr  - PaddleOCR-VL (0.9B) - 109 languages, ultra-fast
+  nanonets   - Nanonets OCR2 (3B-4bit) - High quality, semantic tagging
+  olmocr     - OlmOCR (7B) - Highest accuracy, English-only, batch optimized
   
 Examples:
   uv run ocr.py document.png
@@ -57,7 +57,7 @@ Note: PDFs not supported. Convert PDFs to images first:
         "--model",
         type=str,
         default="granite",
-        choices=["granite", "nanonets", "paddleocr"],
+        choices=["granite", "nanonets", "olmocr"],
         help="Model to use (default: granite)"
     )
     
@@ -109,11 +109,11 @@ Note: PDFs not supported. Convert PDFs to images first:
             print(f"    pdftoppm -png your.pdf output", file=sys.stderr)
         sys.exit(1)
     
-    # Model mapping
+    # Model mapping - Only verified working MLX models
     MODEL_MAP = {
-        "granite": "ibm-granite/granite-docling-258M-mlx",
-        "nanonets": "nanonets/Nanonets-OCR2-3B-mlx",
-        "paddleocr": "PaddlePaddle/PaddleOCR-VL-0.9B-mlx",
+        "granite": "ibm-granite/granite-docling-258M-mlx",  # ✅ Verified working
+        "nanonets": "mlx-community/Nanonets-OCR2-3B-4bit",  # ✅ 4-bit quantized
+        "olmocr": "mlx-community/olmOCR-2-7B-1025-bf16",  # ✅ Large, high accuracy
     }
     
     # Default prompts per model
@@ -125,7 +125,7 @@ Extract the text from the above document as if you were reading it naturally.
 Return tables in HTML format. Return equations in LaTeX. 
 If there's an image without a caption, add a description inside <img></img> tags.
 Use ☐ and ☑ for checkboxes.""",
-        "paddleocr": "<image>\nExtract all text from this document preserving the layout and structure.",
+        "olmocr": "<image>\nExtract all text from this document in markdown format with proper structure.",
     }
     
     model_id = MODEL_MAP[args.model]
