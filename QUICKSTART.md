@@ -18,16 +18,19 @@ uv run test.py
 
 ## 3. Use Your Own Images
 
+**⚠️ Important**: Only image files are supported (PNG, JPG, WEBP, GIF, BMP, TIFF).  
+For PDFs, see the conversion guide below.
+
 ```bash
 # Basic usage
-uv run ocr.py /path/to/your/document.pdf
+uv run ocr.py /path/to/your/document.png
 
 # Save to file
-uv run ocr.py /path/to/your/document.pdf --output result.md
+uv run ocr.py /path/to/your/document.jpg --output result.md
 
 # Try different models
 uv run ocr.py document.png --model nanonets
-uv run ocr.py document.png --model paddleocr
+uv run ocr.py scan.jpg --model paddleocr
 ```
 
 ## Understanding the Output
@@ -52,13 +55,34 @@ Extract specific information:
 
 ```bash
 # Extract tables only
-uv run ocr.py invoice.pdf --prompt "Extract all tables as markdown"
+uv run ocr.py invoice.jpg --prompt "Extract all tables as markdown"
 
 # Convert math to LaTeX
-uv run ocr.py math-paper.pdf --prompt "Convert all mathematical equations to LaTeX"
+uv run ocr.py math-paper.png --prompt "Convert all mathematical equations to LaTeX"
 
 # Get JSON structure
 uv run ocr.py chart.png --prompt "Convert this chart to JSON format"
+```
+
+## Working with PDFs
+
+PDFs must be converted to images first:
+
+```bash
+# Install conversion tool (one-time)
+brew install poppler
+
+# Convert PDF to images
+pdftoppm -png your-document.pdf page
+
+# This creates: page-1.png, page-2.png, etc.
+
+# Process the images
+uv run ocr.py page-1.png --output page1.md
+uv run ocr.py page-2.png --output page2.md
+
+# Or batch process all pages
+uv run batch_ocr.py . --pattern "page-*.png"
 ```
 
 ## What's Happening Under the Hood?

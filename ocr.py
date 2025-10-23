@@ -9,13 +9,15 @@
 
 """
 OCR Script for Mac (Apple Silicon Optimized)
+Supports: PNG, JPG, JPEG, WEBP, GIF, BMP, TIFF (Images only - PDFs not supported)
+
 Usage:
     uv run ocr.py <image_path> [--model MODEL_NAME] [--prompt CUSTOM_PROMPT] [--max-tokens MAX]
     
 Examples:
-    uv run ocr.py document.pdf
-    uv run ocr.py invoice.png --model granite
-    uv run ocr.py chart.jpg --prompt "Convert this chart to JSON"
+    uv run ocr.py document.png
+    uv run ocr.py invoice.jpg --model granite
+    uv run ocr.py chart.png --prompt "Convert this chart to JSON"
 """
 
 import argparse
@@ -34,17 +36,21 @@ Available Models:
   paddleocr  - PaddleOCR-VL (0.9B) - 109 languages, ultra-fast
   
 Examples:
-  uv run ocr.py document.pdf
-  uv run ocr.py invoice.png --model granite
-  uv run ocr.py chart.jpg --prompt "Convert this chart to JSON" --model granite
-  uv run ocr.py page.png --max-tokens 8000
+  uv run ocr.py document.png
+  uv run ocr.py invoice.jpg --model granite
+  uv run ocr.py chart.png --prompt "Convert this chart to JSON" --model granite
+  uv run ocr.py scan.png --max-tokens 8000
+  
+Note: PDFs not supported. Convert PDFs to images first:
+  brew install poppler
+  pdftoppm -png document.pdf page
         """
     )
     
     parser.add_argument(
         "image",
         type=str,
-        help="Path to image or PDF file"
+        help="Path to image file (PNG, JPG, WEBP, GIF, BMP, TIFF)"
     )
     
     parser.add_argument(
@@ -85,10 +91,22 @@ Examples:
     
     args = parser.parse_args()
     
-    # Verify image exists
+    # Verify image exists and is a supported format
     image_path = Path(args.image)
     if not image_path.exists():
         print(f"❌ Error: Image file not found: {args.image}", file=sys.stderr)
+        sys.exit(1)
+    
+    # Check file extension
+    supported_formats = {'.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.tiff', '.tif'}
+    if image_path.suffix.lower() not in supported_formats:
+        print(f"❌ Error: Unsupported file format: {image_path.suffix}", file=sys.stderr)
+        print(f"📝 Supported formats: {', '.join(sorted(supported_formats))}", file=sys.stderr)
+        if image_path.suffix.lower() == '.pdf':
+            print(f"\n💡 Tip: PDFs are not directly supported by MLX-VLM.", file=sys.stderr)
+            print(f"    Convert your PDF to images first:", file=sys.stderr)
+            print(f"    brew install poppler", file=sys.stderr)
+            print(f"    pdftoppm -png your.pdf output", file=sys.stderr)
         sys.exit(1)
     
     # Model mapping

@@ -5,7 +5,8 @@
 
 """
 Batch OCR Processing Script
-Processes multiple images/PDFs in a directory
+Processes multiple images in a directory (PNG, JPG, WEBP, GIF, BMP, TIFF)
+Note: PDFs not supported - convert them to images first
 
 Usage:
     uv run batch_ocr.py <input_directory> [--output-dir OUTPUT] [--model MODEL] [--pattern PATTERN]
@@ -13,7 +14,7 @@ Usage:
 Examples:
     uv run batch_ocr.py ./documents/
     uv run batch_ocr.py ./invoices/ --output-dir ./results/ --model nanonets
-    uv run batch_ocr.py ./scans/ --pattern "*.pdf" --model granite
+    uv run batch_ocr.py ./scans/ --pattern "*.png" --model granite
 """
 
 import argparse
@@ -62,7 +63,7 @@ def main():
     parser.add_argument(
         "input_dir",
         type=str,
-        help="Directory containing images/PDFs to process"
+        help="Directory containing images to process (PNG, JPG, WEBP, etc.)"
     )
     
     parser.add_argument(
@@ -116,8 +117,8 @@ def main():
     
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    # Find all matching files
-    image_extensions = {'.png', '.jpg', '.jpeg', '.pdf', '.webp', '.gif', '.tiff', '.bmp'}
+    # Find all matching files (images only, no PDFs)
+    image_extensions = {'.png', '.jpg', '.jpeg', '.webp', '.gif', '.tiff', '.tif', '.bmp'}
     
     if args.pattern == "*.*":
         files = [f for f in input_dir.iterdir() if f.suffix.lower() in image_extensions]

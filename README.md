@@ -2,21 +2,32 @@
 
 This script uses MLX to run state-of-the-art OCR models directly on your Mac with optimal performance.
 
+**⚠️ Images Only**: Supports PNG, JPG, WEBP, GIF, BMP, TIFF  
+**📄 For PDFs**: Use `pdf_to_ocr.py` (see below) or convert manually with `poppler`
+
 ## Quick Start
 
-No installation needed! Just run:
-
+### Process Images
 ```bash
 uv run ocr.py your-image.png
 ```
 
-The script will automatically download dependencies on first run.
+### Process PDFs (automated)
+```bash
+# Install poppler once
+brew install poppler
+
+# Convert and process PDF in one command
+uv run pdf_to_ocr.py your-document.pdf
+```
+
+The scripts automatically download dependencies on first run.
 
 ## Usage Examples
 
 ### Basic OCR (default: Granite model)
 ```bash
-uv run ocr.py document.pdf
+uv run ocr.py document.png
 ```
 
 ### Use different models
@@ -25,10 +36,10 @@ uv run ocr.py document.pdf
 uv run ocr.py document.png --model granite
 
 # Best quality (3B params) 
-uv run ocr.py document.png --model nanonets
+uv run ocr.py invoice.jpg --model nanonets
 
 # Multilingual (109 languages, 0.9B params)
-uv run ocr.py document.png --model paddleocr
+uv run ocr.py scan.png --model paddleocr
 ```
 
 ### Custom prompts
@@ -37,7 +48,7 @@ uv run ocr.py document.png --model paddleocr
 uv run ocr.py chart.png --prompt "Convert this chart to JSON format"
 
 # Focus on tables
-uv run ocr.py invoice.pdf --prompt "Extract all tables as markdown"
+uv run ocr.py invoice.jpg --prompt "Extract all tables as markdown"
 
 # LaTeX extraction
 uv run ocr.py math.png --prompt "Convert all equations to LaTeX"
@@ -45,12 +56,12 @@ uv run ocr.py math.png --prompt "Convert all equations to LaTeX"
 
 ### Save to file
 ```bash
-uv run ocr.py document.pdf --output result.md
+uv run ocr.py document.png --output result.md
 ```
 
 ### Advanced options
 ```bash
-uv run ocr.py long-doc.pdf --max-tokens 8000 --temperature 0.0
+uv run ocr.py long-scan.png --max-tokens 8000 --temperature 0.0
 ```
 
 ## Available Models
@@ -83,8 +94,37 @@ uv run ocr.py long-doc.pdf --max-tokens 8000 --temperature 0.0
 
 ## Supported File Types
 
-- Images: `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`
-- Documents: `.pdf` (single page recommended)
+**Images Only**: `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.bmp`, `.tiff`
+
+**⚠️ PDFs are NOT directly supported** by MLX-VLM.
+
+### Option 1: Automated (Recommended)
+```bash
+# Install poppler once
+brew install poppler
+
+# Use the PDF helper script
+uv run pdf_to_ocr.py document.pdf
+
+# With options
+uv run pdf_to_ocr.py paper.pdf --model nanonets --output-dir ./results/
+```
+
+This creates:
+- Individual markdown files for each page
+- A combined file with all pages
+- Automatic cleanup of temporary images
+
+### Option 2: Manual Conversion
+```bash
+# Convert PDF to images
+pdftoppm -png document.pdf output
+
+# This creates: output-1.png, output-2.png, etc.
+
+# Process each page
+uv run ocr.py output-1.png --output page1.md
+```
 
 ## Tips
 
